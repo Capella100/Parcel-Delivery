@@ -34,6 +34,18 @@ app.get('/parcels', (req, res) => {
     })
 })
 
+app.get('/parcels/:id', (req, res) => {
+    const {id} = req.params;
+    console.log("ID", id)
+    let found = parcels.find((parcel) => parcel.id === parseInt(id) )
+    if (found){
+        res.status(200).json({data: found})
+    }
+    else{
+        res.sendStatus(404)
+    }
+})
+
 
 app.listen(PORT, () => {
     console.log(`connected to PORT ${PORT}`);
