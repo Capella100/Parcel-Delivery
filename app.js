@@ -1,4 +1,4 @@
-const express = require ('express');
+const express = require('express');
 const cors = require("cors")
 
 const app = express();
@@ -9,56 +9,77 @@ app.use(cors())
 app.use(express.json());
 
 
-const parcels =[
+const parcels = [
     {
-        id:1,
+        id: 1,
         product: "phone",
         description: "An Apple iPhone",
-        deliveryDate: "05/06/2022"
+        deliveryDate: new Date(),
     },
     {
-        id:2,
+        id: 2,
         product: "Laptop",
         description: "An MacBook Air",
-        deliveryDate: "07/06/2022"
+        deliveryDate: new Date(),
     },
     {
-        id:3,
+        id: 3,
         product: "Bag",
         description: "A Birkin Bag",
-        deliveryDate: "08/06/2022"
+        deliveryDate: new Date(),
     }
 ]
 
 app.get('/parcels', (req, res) => {
     res.json({
-       data:parcels
+        data: parcels
     })
 })
 
 app.get('/parcels/:id', (req, res) => {
-    const {id} = req.params;
+    const { id } = req.params;
     console.log("ID", id)
-    let found = parcels.find((parcel) => parcel.id === parseInt(id) )
-    if (found){
-        res.status(200).json({data: found})
+    let found = parcels.find((parcel) => parcel.id === parseInt(id))
+    if (found) {
+        res.status(200).json({ data: found })
     }
-    else{
+    else {
         res.sendStatus(404)
     }
 })
 
 app.post('/parcels', (req, res) => {
     const parcel = req.body;
-    try{
-        
+    try {
+
         parcels.push(parcel);
-        res.status(201).json({data: parcel})
+        res.status(201).json({ data: parcel })
     }
-    catch(err){
+    catch (err) {
         res.status(400).json({
             err
         })
+    }
+})
+
+app.put('/parcels/:parcelId/edit', (req, res) => {
+    let found = parcels.find((parcel) => {
+        return parcel.id === parseInt(req.params.parcelId)
+    });
+    // let found = parcels.find((parcel) => parcel.id === parseInt(req.params.parcelId))
+    if (found) {
+        let updated = {
+            id: found.id,
+            product: req.body.product,
+            description: req.body.description,
+            deliveryDate: new Date()
+        };
+        let targetIndex = parcels.indexOf(found);
+        parcels.splice(targetIndex, 1, updated);
+        res.sendStatus(204)
+    }
+    else {
+        res.sendStatus(400);
     }
 })
 
